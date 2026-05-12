@@ -59,6 +59,32 @@ def search_web(query):
         return "\n".join(output)
 
 # =========================
+# TOOL ROUTER
+# =========================
+
+def detect_intent(text):
+    text = text.lower()
+
+    # ⏰ TIME
+    if "che ore" in text or "ora" in text:
+        return "TIME"
+
+    # 🌐 SEARCH
+    if text.startswith("cerca:"):
+        return "SEARCH"
+
+    # 🌦 WEATHER
+    if "meteo" in text or "temperatura" in text:
+        return "WEATHER"
+
+    # 🧠 MEMORY
+    if "ricordati" in text:
+        return "MEMORY"
+
+    # 🤖 FALLBACK AI
+    return "AI"        
+
+# =========================
 # MEMORIA
 # =========================
 user_memory = load_memory()
@@ -109,16 +135,19 @@ async def memory_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
+    intent = detect_intent(user_text)
+    print(f"INTENT RILEVATO: {intent}")
+    
 
     # 🕒 ORA
-    if "che ore sono" in user_text.lower() or "ora" in user_text.lower():
+    if intent == "TIME":
         now = datetime.now()
         current_time = now.strftime("%H:%M")
         await update.message.reply_text(f"🕒 Sono le {current_time}")
         return
 
     # 🌐 WEB SEARCH (FIXATO E CORRETTO)
-    if user_text.lower().startswith("cerca:"):
+    if intent == "SEARCH":
         query = user_text.replace("cerca:", "").strip()
 
         results = search_web(query)
@@ -127,6 +156,39 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"🌐 Risultati per: {query}\n\n{results}"
         )
         return
+
+    # 🌦 WEATHER TOOL
+    if intent == "WEATHER":
+        results = search_web(f"meteo {user_text}")
+
+        await update.message.reply_text(
+          f"🌦 Meteo trovato:\n\n{results}"
+        )
+        return
+    
+    # 🧠 MEMORY TOOL
+    if intent == "MEMORY":
+        chat_id = str(update.message.chat_id)
+
+        if chat_id not in user_memory:
+           user_memory[chat_id] = []
+
+        memory_text = user_text.replace("ricordati", "").strip()
+
+        user_memory[chat_id].append(
+            {
+            "role": "memory",
+            "content": memory_text
+             }
+         )
+
+         save_memory(user_memory)
+
+         await update.message.reply_text(
+               f"🧠 Ricorderò: {memory_text}"
+         )
+
+         return    
 
     # 🤖 AI (solo se non è altro comando)
     try:
