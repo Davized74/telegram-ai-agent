@@ -182,7 +182,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
              }
          )
 
-         save_memory(user_memory)
+        save_memory(user_memory)
 
          await update.message.reply_text(
                f"🧠 Ricorderò: {memory_text}"
