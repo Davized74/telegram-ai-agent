@@ -167,28 +167,28 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     # 🧠 MEMORY TOOL
-if intent == "MEMORY":
-    chat_id = str(update.message.chat_id)
+    if intent == "MEMORY":
+        chat_id = str(update.message.chat_id)
 
-    if chat_id not in user_memory:
-        user_memory[chat_id] = []
+        if chat_id not in user_memory:
+           user_memory[chat_id] = []
 
-    memory_text = user_text.replace("ricordati", "").strip()
+        memory_text = user_text.replace("ricordati", "").strip()
 
-    user_memory[chat_id].append(
-        {
-            "role": "memory",
-            "content": memory_text
-        }
-    )
+        user_memory[chat_id].append(
+            {
+                "role": "memory",
+                "content": memory_text
+            }
+        )
 
-    save_memory(user_memory)
+        save_memory(user_memory)
 
-    await update.message.reply_text(
-        f"🧠 Ricorderò: {memory_text}"
-    )
+        await update.message.reply_text(
+            f"🧠 Ricorderò: {memory_text}"
+        )
 
-    return
+        return
 
     # 🤖 AI (solo se non è altro comando)
     try:
