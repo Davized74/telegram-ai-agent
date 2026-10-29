@@ -1,56 +1,27 @@
-# Agenda Intelligente Personale
+# Agenda Personale
 
-Un'agenda personale calendarizzata con raccolta di idee da sviluppare/approfondire. 
-Supporta input testuale e vocale (PWA installabile su Android).
-
-## Caratteristiche
-- **Input unificato**: Messaggi testuali o vocali direttamente nell'app
-- **Classificazione intelligente**: L'IA classifica automaticamente in Attività/Appuntamenti/Idee/Appunti
-- **Agenda calendarizzata**: Vista giorno/settimana/mese
-- **Raccolta idee**: Per progetti da sviluppare/approfondire con stati e tag
-- **Ricerca globale**: Trova rapidamente qualsiasi elemento salvato
-- **PWA**: Installabile su smartphone come app nativa
-- **Conferma prima di salvare**: L'IA propone sempre elementi da confermare/modificare
-- **Tutto personale**: Funziona interamente in locale o sul tuo hosting
+Agenda intelligente personale con input vocale/testuale, classificazione automatica, calendario e raccolta idee.
 
 ## Stack
-- **Backend**: FastAPI + SQLAlchemy + SQLite
-- **Frontend**: Vite + React + TypeScript + Tailwind CSS
-- **Bot Telegram** (opzionale): python-telegram-bot
-- **IA**: OpenRouter/Groq (modelli gratuiti disponibili)
-- **Trascrizione vocale**: Web Speech API (gratis) o Whisper
+- Frontend: Vite + React + TypeScript + Tailwind CSS (PWA)
+- Backend: Node.js + Express + TypeScript
+- Database: SQLite (better-sqlite3)
 
 ## Avvio rapido
 
-### 1. Configurazione
+### Backend
 ```bash
+cd server
+npm install
 cp .env.example .env
-# Modifica .env con le tue configurazioni
+npm run dev
 ```
 
-### 2. Backend
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# .venv\Scripts\activate   # Windows
-pip install -r requirements.txt
-alembic upgrade head
-uvicorn api.main:app --reload
-```
-
-### 3. Frontend
+### Frontend
 ```bash
 cd web
 npm install
 npm run dev
 ```
 
-### 4. Bot Telegram (opzionale)
-```bash
-python -m bot.main
-```
-
-## Note
-- Per uso personale e sperimentale
-- Puoi usare solo webapp senza bot
-- Web Speech API funziona su Chrome/Edge
+Apri http://localhost:5173
