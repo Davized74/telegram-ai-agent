@@ -6,7 +6,7 @@ let client: OpenAI | null = null;
 function getClient() {
   if (client) return client;
   const apiKey = process.env.AI_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey || apiKey.trim() === '') return null;
   
   const provider = process.env.AI_PROVIDER || 'openrouter';
   if (provider === 'openrouter') {
@@ -120,38 +120,38 @@ Usa fuso orario Europe/Rome per interpretare date relative.`;
 function fallbackClassify(text: string) {
   const lower = text.toLowerCase();
   
-  if (/\bappuntamento|incontro|visita|domani alle|alle \d/.test(lower)) {
+  if (/\bappuntamento|incontro|visita|domani|dopo domani|ieri|alle\s+\d|ore\s+\d|luned[iì]|marted[iì]|mercoled[iì]|gioved[iì]|venerd[iì]|sabato|domenica/.test(lower)) {
     const parsedDate = parseItalianDate(text);
     const parsedTime = parseItalianTime(text);
     
     return {
       proposals: [{
         type: 'appointment',
-        title: text.slice(0, 60),
+        title: text.slice(0, 80),
         start_date: parsedDate,
         start_time: parsedTime,
         priority: 'medium',
         tags: [],
-        confidence: 0.6,
+        confidence: parsedDate || parsedTime ? 0.7 : 0.5,
         needs_confirmation: true,
-        missing_fields: parsedDate ? [] : ['data'],
+        missing_fields: (parsedDate && parsedTime) ? [] : ['data/ora'],
         original_text: text
       }],
-      needs_clarification: !parsedDate,
-      clarification_question: !parsedDate ? 'Per quale data è l\'appuntamento?' : null,
+      needs_clarification: !(parsedDate && parsedTime),
+      clarification_question: !(parsedDate && parsedTime) ? 'Per quale data e ora è l\'appuntamento?' : null,
       original_text: text
     };
   }
   
-  if (/\bidea|potrei|sarebbe bello|voglio provare|da sviluppare|da approfondire/.test(lower)) {
+  if (/\bidea|potrei|sarebbe bello|voglio provare|da sviluppare|da approfondire|progett/i.test(lower)) {
     return {
       proposals: [{
         type: 'idea',
-        title: text.slice(0, 60),
+        title: text.slice(0, 80),
         status: 'new',
         priority: 'medium',
         tags: [],
-        confidence: 0.6,
+        confidence: 0.8,
         needs_confirmation: true,
         original_text: text
       }],
@@ -159,14 +159,14 @@ function fallbackClassify(text: string) {
     };
   }
   
-  if (/\bappunto|informazione|codice|indirizzo|nota/.test(lower)) {
+  if (/\bappunto|informazione|codice|indirizzo|nota|ricord|password|link|url/.test(lower)) {
     return {
       proposals: [{
         type: 'note',
-        title: text.slice(0, 60),
+        title: text.slice(0, 80),
         priority: 'medium',
         tags: [],
-        confidence: 0.6,
+        confidence: 0.7,
         needs_confirmation: true,
         original_text: text
       }],
@@ -174,16 +174,16 @@ function fallbackClassify(text: string) {
     };
   }
   
-  if (/\bdevo|fare|comprare|chiamare|pagare/.test(lower)) {
+  if (/\bdevo|fare|comprare|chiamare|pagare|andare|prendere|portare|mandare|inviare|finire|completare/.test(lower)) {
     const parsedDate = parseItalianDate(text);
     return {
       proposals: [{
         type: 'activity',
-        title: text.slice(0, 60),
+        title: text.slice(0, 80),
         start_date: parsedDate,
         priority: 'medium',
         tags: [],
-        confidence: 0.6,
+        confidence: 0.7,
         needs_confirmation: true,
         original_text: text
       }],
@@ -194,7 +194,7 @@ function fallbackClassify(text: string) {
   return {
     proposals: [{
       type: 'todo_organize',
-      title: text.slice(0, 60),
+      title: text.slice(0, 80),
       priority: 'medium',
       tags: [],
       confidence: 0.4,
