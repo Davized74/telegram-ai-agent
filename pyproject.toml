@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agenda-personale"
+version = "0.1.0"
+description = "Agenda personale calendarizzata con raccolta idee"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy",
+    "alembic",
+    "pydantic",
+    "pydantic-settings",
+    "aiosqlite",
+    "httpx",
+    "python-dateutil",
+    "dateparser",
+    "pytz",
+    "openai",
+    "python-telegram-bot",
+    "python-multipart",
+    "passlib[bcrypt]",
+    "python-jose[cryptography]",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["api*", "core*", "bot*"]
